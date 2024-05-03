@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EndUserService {
-    @Autowired
-    EndUserRepository endUserRepository;
+    //@Autowired
+    //EndUserRepository endUserRepository;
 }
