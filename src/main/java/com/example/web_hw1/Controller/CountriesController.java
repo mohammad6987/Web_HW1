@@ -18,7 +18,7 @@ public class CountriesController {
     public CountriesController (WeatherService weatherService) {
         this.weatherService = weatherService;
     }
-    @GetMapping("")
+    @GetMapping()
     public List getCountries() {
         return (List) weatherService.getCountries();
     }
