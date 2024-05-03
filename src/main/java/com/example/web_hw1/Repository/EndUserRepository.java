@@ -7,10 +7,10 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 
-//@Repository
-/*public interface EndUserRepository extends CrudRepository<EndUser , Long>{
+@Repository
+public interface EndUserRepository extends CrudRepository<EndUser , Long>{
+    Optional<EndUser> getEndUserById(Long id);
+}
+/*public interface EndUserRepository {
     Optional<EndUser> getEndUserById();
 }*/
-public interface EndUserRepository {
-    Optional<EndUser> getEndUserById();
-}

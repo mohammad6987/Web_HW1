@@ -1,37 +1,34 @@
 package com.example.web_hw1.Controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UsersController {
-    @PostMapping()
+    @PostMapping("/users/register")
     public void register(){
 
     }
-    @PostMapping
+    @PostMapping("/users/login")
     public void login(){
 
     }
 
-    @PutMapping()
+    @PutMapping("/admin/users?username={username}&active={active}")
     public void changeUserStatues(){
 
     }
 
-    @PostMapping()
+    @PostMapping("/user/api-tokens")
     public void createToken(){
 
     }
 
-    @GetMapping()
+    @GetMapping("/user/api-tokens")
     public void tokensList(){
 
     }
 
-    @PostMapping()
+    @DeleteMapping("/user/api-tokens")
     public void removeToken(){
 
     }
