@@ -25,7 +25,7 @@ public class CountriesController {
     }
 
     @GetMapping("/countries")
-    public Country[] getCountry() {
+    public Country[] getCountr() {
         return restTemplate.getForEntity("https://countriesnow.space/api/v0.1/countries", Country[].class).getBody();
     }
 }
