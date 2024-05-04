@@ -1,5 +1,6 @@
 package com.example.web_hw1.Model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -8,5 +9,11 @@ import lombok.Data;
 @Data
 public class EndUser {
     @Id
-    long id;
+    private long id;
+    @Column(name = "username" , nullable = false)
+    private String username;
+    @Column(name = "password" , nullable = false)
+    private String password;
+    @Column(name = "auth" , nullable = false)
+    private boolean authorized;
 }
