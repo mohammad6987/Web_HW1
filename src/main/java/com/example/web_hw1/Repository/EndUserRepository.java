@@ -11,6 +11,7 @@ import java.util.Optional;
 /*public interface EndUserRepository extends CrudRepository<EndUser , Long>{
     Optional<EndUser> getEndUserById();
 }*/
+@Repository
 public interface EndUserRepository {
     Optional<EndUser> getEndUserById();
 }

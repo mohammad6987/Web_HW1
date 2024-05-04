@@ -17,9 +17,4 @@ public class WeatherService {
         this.restTemplate = restTemplate;
     }
 
-    public List getCountries() {
-        String theURI = "https://api-ninjas.com/api/country" ;
-        Country[] listOfCountries = restTemplate.getForObject(theURI, Country[].class);
-        return (List) Arrays.asList(listOfCountries);
-    }
 }

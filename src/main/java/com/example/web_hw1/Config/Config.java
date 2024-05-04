@@ -1,5 +1,6 @@
 package com.example.web_hw1.Config;
 
+import com.example.web_hw1.Controller.CountriesController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -8,8 +9,13 @@ import org.springframework.web.client.RestTemplate;
 public class Config {
 
     @Bean
-    public RestTemplate restTemplate() {
+    RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    CountriesController countriesController(RestTemplate restTemplate) {
+        return new CountriesController(restTemplate);
     }
 
 }
