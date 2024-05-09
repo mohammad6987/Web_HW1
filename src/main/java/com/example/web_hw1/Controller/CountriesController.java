@@ -49,4 +49,9 @@ public class CountriesController {
     public Optional<CountryDtoForSearch> getCountryByName(@PathVariable String name) {
         return Optional.ofNullable(weatherService.findByName(name));
     }
+
+    @GetMapping("/countries/{name}/weather")
+    public Weather getCountryWeather(@PathVariable String name) {
+        return weatherService.CountryWether(name);
+    }
 }
