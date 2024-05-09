@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.net.http.HttpClient;
+
 @Configuration
 public class Config {
 
@@ -15,10 +17,12 @@ public class Config {
         return new RestTemplate();
     }
 
-    @Bean
-    public CountriesController countriesController(RestTemplate restTemplate) {
-        return new CountriesController(restTemplate);
-    }
+//    @Bean
+//    public CountriesController countriesController(RestTemplate restTemplate) {
+//        return new CountriesController(restTemplate);
+//    }
+
+
 //
 //    @Bean
 //    WebClient webclient() {

@@ -3,28 +3,34 @@ package com.example.web_hw1.Controller;
 
 import com.example.web_hw1.Model.*;
 import com.example.web_hw1.Service.WeatherService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 
+import java.net.URI;
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
 public class CountriesController {
 
     private final RestTemplate restTemplate;
-    private final HttpHeaders headers = new HttpHeaders();
+    private final WeatherService weatherService;
+//    private final HttpClient httpClient;
+//    private final HttpHeaders headers;
     private final String API_KEY = "LIPQv0O9lPlFFgxNslVs5g==sQ6DOXmXmTdOZPCm";
 
-    public CountriesController(RestTemplate restTemplate) {
+    public CountriesController(RestTemplate restTemplate, WeatherService weatherService) {
         this.restTemplate = restTemplate;
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        this.weatherService = weatherService;
+//        this.httpClient = httpClient;
     }
 
 
@@ -40,16 +46,7 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}")
-    public Country[] getCountryByName(@PathVariable String name) {
-        String url = "https://api.api-ninjas.com/v1/country?name=" + name;
-//        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-api-key", API_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<> response
-        //        headers.set("x-api-key", API_KEY);
-////        listOfProperty listOfTwoDataTypes = restTemplate.getForEntity(url, listOfProperty.class).getBody();
-////        return listOfTwoDataTypes;
-//        Country[] listOfCountry = restTemplate.getForEntity(url, Country[].class).getBody();
-//        return listOfCountry;
+    public Optional<CountryDtoForSearch> getCountryByName(@PathVariable String name) {
+        return Optional.ofNullable(weatherService.findByName(name));
     }
 }
