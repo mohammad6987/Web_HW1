@@ -4,10 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 
 @Entity(name = "Users")
 @Data
-public class EndUser {
+public class EndUser implements UserDetails {
     @Id
     private long id;
     @Column(name = "username" , nullable = false)
@@ -16,4 +20,32 @@ public class EndUser {
     private String password;
     @Column(name = "auth" , nullable = false)
     private boolean authorized;
+    @Column(name = "role")
+    private String role;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isAuthorized();
+    }
 }
