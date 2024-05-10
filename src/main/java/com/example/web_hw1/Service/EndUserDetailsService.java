@@ -15,8 +15,11 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class EndUserDetailsService {
@@ -96,5 +99,16 @@ public class EndUserDetailsService {
         }else{
             throw new UsernameNotFoundException("this username doesn't exist!");
         }
+    }
+
+
+    public String getAllTokens(EndUser endUser){
+        Collection<TokenPack> tokens = tokenRepository.findByUsername(endUser.getUsername());
+        if(tokens.isEmpty()){
+            return "this user hasn't created any tokens yet!";
+        }
+        return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
+                "expire date : "+ tokenPack.getExpireDate()+"\n" +
+                "token value ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
     }
 }

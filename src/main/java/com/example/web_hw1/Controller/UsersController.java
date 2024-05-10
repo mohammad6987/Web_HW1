@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Date;
 
 @RestController
 public class UsersController {
@@ -34,7 +35,7 @@ public class UsersController {
     public void login(@RequestBody EndUserDto endUserDto){
         EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
         if(endUser != null){
-
+        //TODO
         }
         else {
             throw new UsernameNotFoundException("This user doesn't exist!");
@@ -48,16 +49,17 @@ public class UsersController {
     }
     @Secured("ROLE_USER")
     @PostMapping("/user/api-tokens")
-    public void createToken(@AuthenticationPrincipal EndUser endUser) {
+    public void createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody Date date) {
+        endUserDetailsService.generateToken(name,date , endUser);
     }
 
     @GetMapping("/user/api-tokens")
     @Secured("ROLE_USER")
-    public Collection<TokenPack> tokensList(@AuthenticationPrincipal EndUser endUser){
+    public ResponseEntity<String> tokensList(@AuthenticationPrincipal EndUser endUser){
         if(endUser == null){
-            throw new UsernameNotFoundException("nobody has logged in!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.getAllTokens(endUser));
     }
 
     @DeleteMapping("/user/api-tokens")
