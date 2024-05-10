@@ -51,7 +51,8 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}/weather")
-    public Weather getCountryWeather(@PathVariable String name) {
+    // name is the name of a country
+    public WeatherDto getCountryWeather(@PathVariable String name) {
         return weatherService.CountryWether(name);
     }
 }
