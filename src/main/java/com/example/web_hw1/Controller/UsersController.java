@@ -49,8 +49,15 @@ public class UsersController {
     }
     @Secured("ROLE_USER")
     @PostMapping("/user/api-tokens")
-    public void createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody Date date) {
-        endUserDetailsService.generateToken(name,date , endUser);
+    public ResponseEntity<String> createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody Date date,@RequestHeader String key) {
+        if(endUser == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
+        }
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(name, date, endUser, key));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("the expiration date is in the past!");
+        }
     }
 
     @GetMapping("/user/api-tokens")

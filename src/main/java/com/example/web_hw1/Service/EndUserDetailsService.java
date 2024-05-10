@@ -52,12 +52,14 @@ public class EndUserDetailsService {
                 "\nrole = "+ endUser.getRole());
 
     }
-    public void generateToken(String tokenName , Date expireDate , EndUser endUser){
+    public String generateToken(String tokenName , Date expireDate , EndUser endUser,String key){
         TokenPack tokenPack = new TokenPack();
-        tokenPack.setTokenValue(tokenManger.generateToken(tokenName, expireDate));
+        tokenPack.setTokenValue(tokenManger.generateToken(key, expireDate , endUser.getUsername()));
         tokenPack.setName(tokenName);
         tokenPack.setExpireDate(expireDate);
+        tokenPack.setKey(key);
         tokenRepository.save(tokenPack);
+        return tokenPack.toString();
 
     }
     public EndUser getUserById(long id){
@@ -109,6 +111,6 @@ public class EndUserDetailsService {
         }
         return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token value ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
+                "token key ; "+ tokenPack.getKey().substring(0,5)+"****\n}").collect(Collectors.joining("*************\n"));
     }
 }
