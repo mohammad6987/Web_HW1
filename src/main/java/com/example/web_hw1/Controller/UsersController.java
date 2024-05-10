@@ -1,9 +1,14 @@
 package com.example.web_hw1.Controller;
 
+import com.example.web_hw1.Exception.RepeatedUsername;
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Service.EndUserDetailsService;
+import jdk.jshell.spi.ExecutionControl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,18 +23,16 @@ public class UsersController {
         this.endUserDetailsService = endUserDetailsService;
     }
     @PostMapping("/users/register")
-    public EndUser register(@RequestBody EndUserDto endUserDto) throws Exception {
-        try {
-            return endUserDetailsService.createUser(endUserDto);
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-
+    public ResponseEntity<String> register(@RequestBody EndUserDto endUserDto) throws Exception {
+            try {
+                return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.createUser(endUserDto));
+            }catch (RepeatedUsername e){
+                return  ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            }
     }
     @PostMapping("/users/login")
-    public void login(@RequestBody String username , @RequestBody String password){
-        EndUser endUser = endUserDetailsService.getUserByUsername(username);
+    public void login(@RequestBody EndUserDto endUserDto){
+        EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
         if(endUser != null){
 
         }

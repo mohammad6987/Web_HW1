@@ -1,15 +1,21 @@
 package com.example.web_hw1.Service;
 
+import com.example.web_hw1.Exception.RepeatedUsername;
+import com.example.web_hw1.JWTUtils.TokenManger;
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
+import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
+import com.sun.security.auth.UserPrincipal;
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -17,23 +23,38 @@ public class EndUserDetailsService {
 
     private final EndUserRepository endUserRepository;
     private final TokenRepository tokenRepository;
+    private final TokenManger tokenManger;
 
-    public EndUserDetailsService(EndUserRepository endUserRepository,TokenRepository tokenRepository) {
+    public EndUserDetailsService(EndUserRepository endUserRepository,TokenRepository tokenRepository,TokenManger tokenManger) {
         this.endUserRepository = endUserRepository;
         this.tokenRepository = tokenRepository;
+        this.tokenManger = tokenManger;
     }
 
-    public EndUser createUser(EndUserDto endUserDto) throws Exception {
+
+    public String createUser(EndUserDto endUserDto) throws Exception {
+        if(endUserRepository.getEndUserByUsername(endUserDto.getUsername()).isPresent()){
+            throw new RepeatedUsername("username already taken!");
+        }
         EndUser endUser = new EndUser();
-        endUser.setId(endUserDto.getId());
         endUser.setUsername(endUserDto.getUsername());
         endUser.setPassword(hashString(endUserDto.getPassword()));
         endUser.setAuthorized(false);
         endUser.setRole("USER");
-        if(endUserRepository.getEndUserByUsername(endUser.getUsername()).isPresent()){
-            throw new Exception("this user already exist!");
-        }
-        return endUserRepository.save(endUser);
+        endUserRepository.save(endUser);
+
+        return ("new User created!\n" +
+                "username = "+ endUserDto.getUsername()+
+                "\nid = " + endUser.getId()+
+                "\nrole = "+ endUser.getRole());
+
+    }
+    public void generateToken(String tokenName , Date expireDate , EndUser endUser){
+        TokenPack tokenPack = new TokenPack();
+        tokenPack.setTokenValue(tokenManger.generateToken(tokenName, expireDate));
+        tokenPack.setName(tokenName);
+        tokenPack.setExpireDate(expireDate);
+        tokenRepository.save(tokenPack);
 
     }
     public EndUser getUserById(long id){
@@ -59,12 +80,9 @@ public class EndUserDetailsService {
 
     public static String hashString(String data) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] encodedhash = digest.digest(
-                data.getBytes(StandardCharsets.UTF_8));
-
-        // Convert byte array to hex string for readability
+        byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
-        for (byte b : encodedhash) {
+        for (byte b : encodedHash) {
             sb.append(String.format("%02X", b));
         }
         return sb.toString();

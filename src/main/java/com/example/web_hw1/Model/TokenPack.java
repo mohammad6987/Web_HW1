@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Data
 @Entity(name = "Tokens")
+@NoArgsConstructor
 public class TokenPack {
     @Id
     private String name;
@@ -19,15 +20,4 @@ public class TokenPack {
     private String tokenValue;
     private Date expireDate;
 
-    public TokenPack(String name, String username, Date expireDate) {
-        this.name = name;
-        this.username = username;
-        this.expireDate = expireDate;
-        this.tokenValue = TokenManger.generateToken(username,expireDate);
-
-    }
-
-    public TokenPack() {
-
-    }
 }

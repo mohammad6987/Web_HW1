@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +15,9 @@ import java.util.Timer;
 
 @Component
 public class TokenManger {
+
     private static final String SECRET = "qwertty";
-    public static String generateToken(String username,Date expire) {
+    public  String generateToken(String username,Date expire) {
         if(System.currentTimeMillis() >= expire.getTime()){
             throw new ExpiredTokenException("Provided expire time is in the past.");
         }
@@ -25,13 +27,13 @@ public class TokenManger {
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
-    public static boolean validateToken(String token , EndUser endUser){
+    public  boolean validateToken(String token , EndUser endUser){
         String tokenUserName = extractUsername(token);
         Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
         boolean isExpired = claims.getExpiration().before(new Date());
         return (endUser.getUsername().equals(tokenUserName) && !isExpired);
     }
-    public static String extractUsername(String token) {
+    public String extractUsername(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token)

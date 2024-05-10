@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class EndUserDto {
-    private Long id;
     private String username;
     private String password;
 }
