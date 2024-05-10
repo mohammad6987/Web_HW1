@@ -2,13 +2,14 @@ package com.example.web_hw1.Service;
 
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
-import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 @Service
@@ -26,7 +27,7 @@ public class EndUserDetailsService {
         EndUser endUser = new EndUser();
         endUser.setId(endUserDto.getId());
         endUser.setUsername(endUserDto.getUsername());
-        endUser.setPassword(endUserDto.getPassword());
+        endUser.setPassword(hashString(endUserDto.getPassword()));
         endUser.setAuthorized(false);
         endUser.setRole("USER");
         if(endUserRepository.getEndUserByUsername(endUser.getUsername()).isPresent()){
@@ -51,14 +52,31 @@ public class EndUserDetailsService {
             return user.get();
         }
     }
-    public EndUser enabelUser(String username){
+    public boolean validatePassword(String username, String password) throws NoSuchAlgorithmException {
+        EndUser endUser = endUserRepository.getEndUserByUsername(username).get();
+        return (hashString(password).equals(endUser.getPassword()));
+    }
+
+    public static String hashString(String data) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] encodedhash = digest.digest(
+                data.getBytes(StandardCharsets.UTF_8));
+
+        // Convert byte array to hex string for readability
+        StringBuilder sb = new StringBuilder();
+        for (byte b : encodedhash) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
+    public void enableUser(String username, boolean condition){
         Optional<EndUser> endUser = endUserRepository.getEndUserByUsername(username);
         if(endUser.isPresent()) {
-            endUser.get().setAuthorized(true);
+            endUser.get().setAuthorized(condition);
             endUserRepository.save(endUser.get());
         }else{
             throw new UsernameNotFoundException("this username doesn't exist!");
         }
-        return null;
     }
 }

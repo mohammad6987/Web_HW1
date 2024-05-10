@@ -1,7 +1,9 @@
 package com.example.web_hw1.JWTUtils;
 
+import com.example.web_hw1.Exception.ExpiredTokenException;
 import com.example.web_hw1.Model.EndUser;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.User;
@@ -13,10 +15,13 @@ import java.util.Timer;
 @Component
 public class TokenManger {
     private static final String SECRET = "qwertty";
-    public static String generateToken(String username,long expire) {
+    public static String generateToken(String username,Date expire) {
+        if(System.currentTimeMillis() >= expire.getTime()){
+            throw new ExpiredTokenException("Provided expire time is in the past.");
+        }
         return Jwts.builder()
                 .setSubject(username)
-                .setExpiration(new Date(System.currentTimeMillis() + expire))
+                .setExpiration(expire)
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }

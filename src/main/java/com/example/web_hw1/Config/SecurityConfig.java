@@ -30,7 +30,10 @@ public class SecurityConfig {
                  .requestMatchers("/users/login").permitAll()
                  .requestMatchers("/users/register").permitAll()
                  .requestMatchers("/admin/*").hasRole("ADMIN")
-                 ;
+                 .anyRequest().permitAll()
+                 .and().formLogin().loginPage("/users/login").defaultSuccessUrl("/countries" , true)
+
+                  ;
 
          return httpSecurity.build();
     }
