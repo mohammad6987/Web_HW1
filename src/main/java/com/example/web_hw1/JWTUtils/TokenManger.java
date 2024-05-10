@@ -17,7 +17,7 @@ public class TokenManger {
         return Jwts.builder()
                 .setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + expire))
-                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
     }
     public static boolean validateToken(String token , EndUser endUser){
