@@ -1,5 +1,6 @@
 package com.example.web_hw1.Service;
 
+import com.example.web_hw1.Exception.ExpiredTokenException;
 import com.example.web_hw1.Exception.RepeatedUsername;
 import com.example.web_hw1.JWTUtils.TokenManger;
 import com.example.web_hw1.Model.EndUser;
@@ -135,5 +136,23 @@ public class EndUserDetailsService {
         return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
                 "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
+    }
+
+    public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {
+        TokenPack tokenPack = tokenRepository.getTokenPackByName(tokenName);
+        if (tokenPack == null) {
+            throw new ExpiredTokenException("no token exists with this name !");
+        }
+        if(tokenPack.getExpireDate().before(new Date(System.currentTimeMillis()))){
+            throw new ExpiredTokenException("this token is already expired!");
+        }
+        if(!tokenPack.getOwnerUsername().equals(endUser.getUsername())){
+            throw new ExpiredTokenException("this token doesn't belong to you!");
+        }
+        if(!tokenPack.getTokenValue().equals(tokenValue)){
+            throw new ExpiredTokenException("mismatch in token value!");
+        }
+        tokenRepository.deleteByName(tokenName);
+        return "token deleted successfully!";
     }
 }

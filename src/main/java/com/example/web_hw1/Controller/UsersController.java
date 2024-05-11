@@ -83,7 +83,11 @@ public class UsersController {
 
     @DeleteMapping("/user/api-tokens")
     @Secured("ROLE_USER")
-    public void removeToken(@AuthenticationPrincipal EndUser endUser){
-
+    public ResponseEntity<String> removeToken(@AuthenticationPrincipal EndUser endUser , @RequestBody String tokenValue , @RequestBody String tokenName){
+            try {
+                return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.removeToken(endUser , tokenName , tokenValue));
+            }catch (Exception e){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
     }
 }
