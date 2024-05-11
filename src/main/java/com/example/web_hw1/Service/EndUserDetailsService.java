@@ -69,6 +69,12 @@ public class EndUserDetailsService {
 
     }
     public String generateToken(String tokenName , String expireDate , EndUser endUser){
+        if(endUser == null){
+            throw new ExpiredTokenException("username is null!");
+        }
+        if(tokenRepository.getTokenPackByName(tokenName) != null){
+            throw new ExpiredTokenException("this name for token is already taken!");
+        }
         TokenPack tokenPack = new TokenPack();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date expire;
@@ -76,15 +82,17 @@ public class EndUserDetailsService {
             expire = simpleDateFormat.parse(expireDate);
         } catch (ParseException e) {
             System.out.println("error in here!!!!");
-            throw new RuntimeException(e);
+            throw new ExpiredTokenException("error in time format!");
         }
         tokenPack.setTokenValue(tokenManger.generateToken(endUser.getUsername(), expire ));
         tokenPack.setName(tokenName);
         tokenPack.setExpireDate(expire);
-        System.out.println("error before database!!!!");
+        tokenPack.setOwnerUsername(endUser.getUsername());
         tokenRepository.save(tokenPack);
-        System.out.println("error after database!!!!");
-        return tokenPack.toString();
+        return ("new token created :\n" +
+                "name : "+ tokenName+"\n"+
+                "token value :"+ tokenPack.getTokenValue()+"\n"+
+                "expire date : "+ tokenPack.getExpireDate());
 
     }
     public EndUser getUserById(long id){
@@ -145,7 +153,7 @@ public class EndUserDetailsService {
             throw new ExpiredTokenException("no token exists with this name !");
         }
         if(tokenPack.getExpireDate().before(new Date(System.currentTimeMillis()))){
-            throw new ExpiredTokenException("this token is already expired!");
+            throw new ExpiredTokenException("this token has  already been expired!");
         }
         if(!tokenPack.getOwnerUsername().equals(endUser.getUsername())){
             throw new ExpiredTokenException("this token doesn't belong to you!");

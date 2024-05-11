@@ -5,6 +5,7 @@ import com.example.web_hw1.Model.*;
 import com.example.web_hw1.Service.WeatherService;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Flux;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,24 +37,33 @@ public class CountriesController {
 
 
     @GetMapping("/countries")
-    public CountryContainer getCountry() {
+    public CountryContainer getCountry(@AuthenticationPrincipal EndUser endUser) throws AccessDeniedException {
+        if(endUser == null || !endUser.isAuthorized()){
+            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+        }else{
         datatype datatype = restTemplate.getForEntity("https://countriesnow.space/api/v0.1/countries", datatype.class).getBody();
         Country[] listofCountry = datatype.getData();
         ArrayList<CountryDto> countries = new ArrayList<CountryDto>();
         for (Country country : listofCountry) {
             countries.add(new CountryDto(country.getCountry()));
         }
-        return new CountryContainer(countries,countries.size());
+        return new CountryContainer(countries,countries.size());}
     }
 
     @GetMapping("/countries/{name}")
-    public Optional<CountryDtoForSearch> getCountryByName(@PathVariable String name) {
-        return Optional.ofNullable(weatherService.findByName(name));
+    public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException {
+        if(endUser == null || !endUser.isAuthorized()){
+            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+        }else{
+        return Optional.ofNullable(weatherService.findByName(name));}
     }
 
     @GetMapping("/countries/{name}/weather")
     // name is the name of a country
-    public WeatherDto getCountryWeather(@PathVariable String name) {
-        return weatherService.CountryWether(name);
+    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException {
+        if(endUser == null || !endUser.isAuthorized()){
+            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+        }else{
+        return weatherService.CountryWether(name);}
     }
 }

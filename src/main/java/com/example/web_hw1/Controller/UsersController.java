@@ -66,7 +66,7 @@ public class UsersController {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser));
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("the expiration date is in the past!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
     }
 

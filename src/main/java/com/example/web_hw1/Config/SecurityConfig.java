@@ -49,15 +49,18 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() throws Exception {
-        EndUser admin = new EndUser();
+        EndUser admin = endUserDetailsService.getEndUserRepository().getEndUserByUsername("ADMIN").orElse(null);
+        if(admin == null || admin.getRole().equals("USER")){
+        admin = new EndUser();
         admin.setAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"));
         admin.setRole("ADMIN");
         admin.setUsername("test");
         admin.setPassword(endUserDetailsService.hashString("123"));
         admin.setAuthorized(true);
-        admin.setId(-1L);
+        admin.setId(0L);
         admin.setUsername("admin");
         endUserDetailsService.getEndUserRepository().save(admin);
+        }
         return new InMemoryUserDetailsManager();
     }
 
