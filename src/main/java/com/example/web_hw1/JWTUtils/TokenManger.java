@@ -5,37 +5,37 @@ import com.example.web_hw1.Model.EndUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
 public class TokenManger {
-
-    private static final String SECRET = "qwertty";
-    public  String generateToken(String key,Date expire,String ownerUsername) {
+    //@Value("${SECRET}")
+    private static final String SECRET  = "123456789";
+    public  String generateToken(String key,Date expire) {
         if(System.currentTimeMillis() >= expire.getTime()){
             throw new ExpiredTokenException("Provided expire time is in the past.");
         }
-        return Jwts.builder()
+        return "API "+Jwts.builder()
                 .setSubject(key)
                 .setExpiration(expire)
-                .claim("ownerUsername",ownerUsername )
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
-    public  boolean validateToken(String token ,String key, EndUser endUser){
+    public  boolean validateToken(String token , EndUser endUser){
         String tokenKey = extractKey(token);
         Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
         boolean isExpired = claims.getExpiration().before(new Date());
-        String extractedUsername = claims.get("ownerUsername" , String.class);
-        return (endUser.getUsername().equals(extractedUsername) && !isExpired && tokenKey.equals(key));
+        return (!isExpired && tokenKey.equals(endUser.getUsername()));
     }
     public String extractKey(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET)
-                .parseClaimsJws(token)
+                .parseClaimsJws(token.replace("API ", ""))
                 .getBody()
                 .getSubject();
     }
+
 }

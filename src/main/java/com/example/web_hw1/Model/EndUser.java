@@ -3,9 +3,12 @@ package com.example.web_hw1.Model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 @Entity(name = "Users")
 @Data
@@ -21,6 +24,9 @@ public class EndUser implements UserDetails {
     private boolean authorized;
     @Column(name = "role")
     private String role;
+    @Column
+    private SimpleGrantedAuthority authority;
+
 
 
     @Override

@@ -15,7 +15,6 @@ public class TokenPack {
     @Id
     private String name;
     private String ownerUsername;
-    private String key;
     private String tokenValue;
     private Date expireDate;
 

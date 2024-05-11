@@ -10,12 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 public class UsersController {
@@ -32,14 +35,22 @@ public class UsersController {
             }
     }
     @PostMapping("/users/login")
-    public void login(@RequestBody EndUserDto endUserDto){
-        EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
-        if(endUser != null){
-        //TODO
+    public ResponseEntity<String> login(@RequestBody EndUserDto endUserDto){
+        try {
+            EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
+            if(endUserDetailsService.validatePassword(endUser.getUsername() , endUserDto.getPassword())){
+               /* UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(endUser, null, List.of(endUser.getAuthority()));
+                // Set authentication token in security context
+                SecurityContextHolder.getContext().setAuthentication(authentication);*/
+                return ResponseEntity.status(HttpStatus.OK).body("welcome "+endUser.getUsername());
+            }else{
+                return  ResponseEntity.status(HttpStatus.CONFLICT).body("username doesn't match with password!");
+            }
+        }catch (Exception e){
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        else {
-            throw new UsernameNotFoundException("This user doesn't exist!");
-        }
+
+
     }
 
     @PutMapping("/admin/users?username={username}&active={active}")
@@ -47,14 +58,15 @@ public class UsersController {
     public void changeUserStatues(@PathVariable String username , @PathVariable boolean active){
         endUserDetailsService.enableUser(username ,active);
     }
-    @Secured("ROLE_USER")
+   // @Secured("ROLE_USER")
     @PostMapping("/user/api-tokens")
-    public ResponseEntity<String> createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody Date date,@RequestHeader String key) {
+    public ResponseEntity<String> createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody String date) {
+        System.out.println("error in controller!");
         if(endUser == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(name, date, endUser, key));
+            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(name, date, endUser));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("the expiration date is in the past!");
         }

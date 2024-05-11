@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public interface TokenRepository extends CrudRepository<TokenPack, String> {
     TokenPack getTokenPackByName(String name);
-    Collection<TokenPack> findByUsername(String username);
+    Collection<TokenPack> findByOwnerUsername(String username);
     void deleteByName(String name);
+    void deleteByTokenValue(String tokenValue);
 }

@@ -9,13 +9,17 @@ import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
 import com.sun.security.auth.UserPrincipal;
 import jdk.jshell.spi.ExecutionControl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collector;
@@ -34,6 +38,9 @@ public class EndUserDetailsService {
         this.tokenManger = tokenManger;
     }
 
+    public EndUserRepository getEndUserRepository() {
+        return endUserRepository;
+    }
 
     public String createUser(EndUserDto endUserDto) throws Exception {
         if(endUserRepository.getEndUserByUsername(endUserDto.getUsername()).isPresent()){
@@ -44,21 +51,37 @@ public class EndUserDetailsService {
         endUser.setPassword(hashString(endUserDto.getPassword()));
         endUser.setAuthorized(false);
         endUser.setRole("USER");
+        endUser.setAuthority(new SimpleGrantedAuthority("ROLE_USER"));
         endUserRepository.save(endUser);
-
+        TokenPack initToken = new TokenPack();
+        initToken.setOwnerUsername(endUser.getUsername());
+        initToken.setName("init_0_"+endUser.getUsername());
+        initToken.setExpireDate(new Date(System.currentTimeMillis()+ 1000*60*5));
+        initToken.setTokenValue(tokenManger.generateToken(endUser.getUsername() , initToken.getExpireDate()));
+        tokenRepository.save(initToken);
         return ("new User created!\n" +
                 "username = "+ endUserDto.getUsername()+
                 "\nid = " + endUser.getId()+
-                "\nrole = "+ endUser.getRole());
+                "\nrole = "+ endUser.getRole())+
+                "\ninitial token value = "+initToken.getTokenValue();
 
     }
-    public String generateToken(String tokenName , Date expireDate , EndUser endUser,String key){
+    public String generateToken(String tokenName , String expireDate , EndUser endUser){
         TokenPack tokenPack = new TokenPack();
-        tokenPack.setTokenValue(tokenManger.generateToken(key, expireDate , endUser.getUsername()));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date expire;
+        try {
+            expire = simpleDateFormat.parse(expireDate);
+        } catch (ParseException e) {
+            System.out.println("error in here!!!!");
+            throw new RuntimeException(e);
+        }
+        tokenPack.setTokenValue(tokenManger.generateToken(endUser.getUsername(), expire ));
         tokenPack.setName(tokenName);
-        tokenPack.setExpireDate(expireDate);
-        tokenPack.setKey(key);
+        tokenPack.setExpireDate(expire);
+        System.out.println("error before database!!!!");
         tokenRepository.save(tokenPack);
+        System.out.println("error after database!!!!");
         return tokenPack.toString();
 
     }
@@ -83,7 +106,7 @@ public class EndUserDetailsService {
         return (hashString(password).equals(endUser.getPassword()));
     }
 
-    public static String hashString(String data) throws NoSuchAlgorithmException {
+    public  String hashString(String data) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] encodedHash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
@@ -105,12 +128,12 @@ public class EndUserDetailsService {
 
 
     public String getAllTokens(EndUser endUser){
-        Collection<TokenPack> tokens = tokenRepository.findByUsername(endUser.getUsername());
+        Collection<TokenPack> tokens = tokenRepository.findByOwnerUsername(endUser.getUsername());
         if(tokens.isEmpty()){
             return "this user hasn't created any tokens yet!";
         }
         return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token key ; "+ tokenPack.getKey().substring(0,5)+"****\n}").collect(Collectors.joining("*************\n"));
+                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
     }
 }
