@@ -9,6 +9,7 @@ import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
 import com.sun.security.auth.UserPrincipal;
+import jakarta.transaction.Transactional;
 import jdk.jshell.spi.ExecutionControl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -137,7 +138,7 @@ public class EndUserDetailsService {
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
                 "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
     }
-
+    @Transactional
     public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {
         TokenPack tokenPack = tokenRepository.getTokenPackByName(tokenName);
         if (tokenPack == null) {

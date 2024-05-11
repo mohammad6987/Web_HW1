@@ -3,6 +3,7 @@ package com.example.web_hw1.Controller;
 import com.example.web_hw1.Exception.RepeatedUsername;
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
+import com.example.web_hw1.Model.TokenDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Service.EndUserDetailsService;
 import jdk.jshell.spi.ExecutionControl;
@@ -39,9 +40,6 @@ public class UsersController {
         try {
             EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
             if(endUserDetailsService.validatePassword(endUser.getUsername() , endUserDto.getPassword())){
-               /* UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(endUser, null, List.of(endUser.getAuthority()));
-                // Set authentication token in security context
-                SecurityContextHolder.getContext().setAuthentication(authentication);*/
                 return ResponseEntity.status(HttpStatus.OK).body("welcome "+endUser.getUsername());
             }else{
                 return  ResponseEntity.status(HttpStatus.CONFLICT).body("username doesn't match with password!");
@@ -58,15 +56,15 @@ public class UsersController {
     public void changeUserStatues(@PathVariable String username , @PathVariable boolean active){
         endUserDetailsService.enableUser(username ,active);
     }
-   // @Secured("ROLE_USER")
+    @Secured("ROLE_USER")
     @PostMapping("/user/api-tokens")
-    public ResponseEntity<String> createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody String name, @RequestBody String date) {
+    public ResponseEntity<String> createToken(@AuthenticationPrincipal EndUser endUser, @RequestBody TokenDto tokenDto) {
         System.out.println("error in controller!");
         if(endUser == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(name, date, endUser));
+            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("the expiration date is in the past!");
         }
@@ -82,10 +80,10 @@ public class UsersController {
     }
 
     @DeleteMapping("/user/api-tokens")
-    @Secured("ROLE_USER")
-    public ResponseEntity<String> removeToken(@AuthenticationPrincipal EndUser endUser , @RequestBody String tokenValue , @RequestBody String tokenName){
+    //@Secured("ROLE_USER")
+    public ResponseEntity<String> removeToken(@AuthenticationPrincipal EndUser endUser , @RequestBody TokenDto tokenDto){
             try {
-                return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.removeToken(endUser , tokenName , tokenValue));
+                return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.removeToken(endUser , tokenDto.getName() , tokenDto.getTokenValue()));
             }catch (Exception e){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
