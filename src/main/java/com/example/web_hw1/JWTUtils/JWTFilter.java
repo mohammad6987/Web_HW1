@@ -39,6 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
             try {
                 EndUser endUser = endUserDetailsService.getUserByUsername(username);
                 if(!tokenManger.validateToken(token, endUser)){
+
                     filterChain.doFilter(request, response);
                     return;
                 }

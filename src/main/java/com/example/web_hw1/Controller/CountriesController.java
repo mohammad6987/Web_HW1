@@ -1,6 +1,7 @@
 package com.example.web_hw1.Controller;
 
 
+import com.example.web_hw1.Exception.UnAuthorizedAccess;
 import com.example.web_hw1.Model.*;
 import com.example.web_hw1.Service.WeatherService;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
@@ -37,9 +38,9 @@ public class CountriesController {
 
 
     @GetMapping("/countries")
-    public CountryContainer getCountry(@AuthenticationPrincipal EndUser endUser) throws AccessDeniedException {
+    public CountryContainer getCountry(@AuthenticationPrincipal EndUser endUser) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
-            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+            throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{
         datatype datatype = restTemplate.getForEntity("https://countriesnow.space/api/v0.1/countries", datatype.class).getBody();
         Country[] listofCountry = datatype.getData();
@@ -51,18 +52,18 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}")
-    public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException {
+    public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException, UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
-            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+            throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{
         return Optional.ofNullable(weatherService.findByName(name));}
     }
 
     @GetMapping("/countries/{name}/weather")
     // name is the name of a country
-    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException {
+    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException, UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
-            throw new AccessDeniedException("this user hasn't been enables!\nwait until the admin authenticate this account!");
+            throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{
         return weatherService.CountryWether(name);}
     }

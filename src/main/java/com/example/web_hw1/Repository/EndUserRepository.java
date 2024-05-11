@@ -14,6 +14,3 @@ public interface EndUserRepository extends CrudRepository<EndUser , Long>{
     Optional<EndUser> getEndUserByUsername(String username);
 
 }
-/*public interface EndUserRepository {
-    Optional<EndUser> getEndUserById();
-}*/
