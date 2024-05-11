@@ -3,6 +3,7 @@ package com.example.web_hw1.Config;
 import com.example.web_hw1.JWTUtils.JWTFilter;
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
+import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Service.EndUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +35,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
          httpSecurity.
                  csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth ->auth
-                         //.requestMatchers("/users/login").permitAll()
                          .requestMatchers("/users/register").permitAll()
                          .requestMatchers("/users/login").permitAll()
                          .requestMatchers("/user/api-tokens").permitAll()
@@ -42,24 +44,31 @@ public class SecurityConfig {
                  .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                  .sessionManagement(sessionMgmt -> sessionMgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-                  ;
+
 
          return httpSecurity.build();
     }
 
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() throws Exception {
-        EndUser admin = endUserDetailsService.getEndUserRepository().getEndUserByUsername("ADMIN").orElse(null);
+        String username = "ADMIN";
+        String password = "123";
+        EndUser admin = endUserDetailsService.getEndUserRepository().getEndUserByUsername(username).orElse(null);
         if(admin == null || admin.getRole().equals("USER")){
         admin = new EndUser();
         admin.setAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"));
         admin.setRole("ADMIN");
-        admin.setUsername("test");
-        admin.setPassword(endUserDetailsService.hashString("123"));
+        admin.setUsername(username);
+        admin.setPassword(endUserDetailsService.hashString(password));
         admin.setAuthorized(true);
         admin.setId(0L);
-        admin.setUsername("admin");
         endUserDetailsService.getEndUserRepository().save(admin);
+        TokenPack tokenPack = new TokenPack();
+        tokenPack.setName("prime_token");
+        tokenPack.setExpireDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse("2029-01-01T23:59:59Z"));
+        tokenPack.setOwnerUsername(admin.getUsername());
+        tokenPack.setTokenValue(endUserDetailsService.generateToken("prime_token","2029-01-01T23:59:59Z" , admin));
+        endUserDetailsService.getTokenRepository().save(tokenPack);
         }
         return new InMemoryUserDetailsManager();
     }

@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -42,6 +43,10 @@ public class EndUserDetailsService {
 
     public EndUserRepository getEndUserRepository() {
         return endUserRepository;
+    }
+
+    public TokenRepository getTokenRepository() {
+        return tokenRepository;
     }
 
     public String createUser(EndUserDto endUserDto) throws Exception {
@@ -126,13 +131,17 @@ public class EndUserDetailsService {
         return sb.toString();
     }
 
-    public void enableUser(String username, boolean condition){
-        Optional<EndUser> endUser = endUserRepository.getEndUserByUsername(username);
-        if(endUser.isPresent()) {
-            endUser.get().setAuthorized(condition);
-            endUserRepository.save(endUser.get());
-        }else{
+    public void enableUser(EndUser admin,String username, boolean condition) throws AccessDeniedException {
+        if(admin.getRole().equals("ADMIN")){
+            Optional<EndUser> endUser = endUserRepository.getEndUserByUsername(username);
+            if(endUser.isPresent()) {
+                endUser.get().setAuthorized(condition);
+                endUserRepository.save(endUser.get());
+            }else{
             throw new UsernameNotFoundException("this username doesn't exist!");
+            }
+        }else {
+            throw new AccessDeniedException("You don't have access to this page!");
         }
     }
 
@@ -144,7 +153,7 @@ public class EndUserDetailsService {
         }
         return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"****\n}").collect(Collectors.joining("*************\n"));
+                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"\n}").collect(Collectors.joining("*************\n"));
     }
     @Transactional
     public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {

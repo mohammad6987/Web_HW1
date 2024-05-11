@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
+import java.nio.file.AccessDeniedException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -51,10 +51,14 @@ public class UsersController {
 
     }
 
-    @PutMapping("/admin/users?username={username}&active={active}")
-    @Secured("ROLE_ADMIN")
-    public void changeUserStatues(@PathVariable String username , @PathVariable boolean active){
-        endUserDetailsService.enableUser(username ,active);
+    @PutMapping("/admin/username={username}&active={active}")
+    public ResponseEntity<String> changeUserStatues(@AuthenticationPrincipal EndUser endUser,@PathVariable String username , @PathVariable boolean active) throws AccessDeniedException {
+       try {
+           endUserDetailsService.enableUser(endUser,username ,active);
+           return ResponseEntity.status(HttpStatus.OK).body(username + " is now "+ (active ? "activated":"locked"));
+       }catch (Exception e){
+           return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+       }
     }
     @Secured("ROLE_USER")
     @PostMapping("/user/api-tokens")
