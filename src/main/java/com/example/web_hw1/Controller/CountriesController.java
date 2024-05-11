@@ -5,6 +5,8 @@ import com.example.web_hw1.Exception.UnAuthorizedAccess;
 import com.example.web_hw1.Model.*;
 import com.example.web_hw1.Service.WeatherService;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,7 @@ public class CountriesController {
 
 
     @GetMapping("/countries")
+    @Cacheable(value = "countries", key = "#allCountries")
     public CountryContainer getCountry(@AuthenticationPrincipal EndUser endUser) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
@@ -52,7 +55,8 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}")
-    public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException, UnAuthorizedAccess {
+    @Cacheable(value = "countries", key = "#name")
+    public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{
@@ -60,8 +64,10 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}/weather")
+    @Cacheable(value = "weather" , key = "#name")
+    @CacheEvict(value = "weather" , key = "#name")
     // name is the name of a country
-    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws AccessDeniedException, UnAuthorizedAccess {
+    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{

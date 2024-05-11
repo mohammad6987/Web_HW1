@@ -60,17 +60,7 @@ public class EndUserDetailsService {
         endUser.setRole("USER");
         endUser.setAuthority(new SimpleGrantedAuthority("ROLE_USER"));
         endUserRepository.save(endUser);
-        TokenPack initToken = new TokenPack();
-        initToken.setOwnerUsername(endUser.getUsername());
-        initToken.setName("init_0_"+endUser.getUsername());
-        initToken.setExpireDate(new Date(System.currentTimeMillis()+ 1000*60*5));
-        initToken.setTokenValue(tokenManger.generateToken(endUser.getUsername() , initToken.getExpireDate()));
-        tokenRepository.save(initToken);
-        return ("new User created!\n" +
-                "username = "+ endUserDto.getUsername()+
-                "\nid = " + endUser.getId()+
-                "\nrole = "+ endUser.getRole())+
-                "\ninitial token value = "+initToken.getTokenValue();
+        return "new user created!\nplease wait until the admin authenticate your account";
 
     }
     public String generateToken(String tokenName , String expireDate , EndUser endUser){
@@ -116,9 +106,22 @@ public class EndUserDetailsService {
             return user.get();
         }
     }
-    public boolean validatePassword(String username, String password) throws NoSuchAlgorithmException {
+    public String validatePassword(String username, String password) throws NoSuchAlgorithmException {
         EndUser endUser = endUserRepository.getEndUserByUsername(username).get();
-        return (hashString(password).equals(endUser.getPassword()));
+        if(endUser == null || hashString(password).equals(endUser.getPassword()) ){
+            TokenPack initToken = new TokenPack();
+            initToken.setOwnerUsername(endUser.getUsername());
+            initToken.setName("init_0_"+endUser.getUsername());
+            initToken.setExpireDate(new Date(System.currentTimeMillis()+ 1000*60*5));
+            initToken.setTokenValue(tokenManger.generateToken(endUser.getUsername() , initToken.getExpireDate()));
+            tokenRepository.save(initToken);
+            return ("welcome again!\n" +
+                    " please use this token ,it will expire in 5 minutes!\n"+
+                    "token value = "+initToken.getTokenValue());
+
+        }else {
+            throw new UsernameNotFoundException("username and password doesn't match!");
+        }
     }
 
     public  String hashString(String data) throws NoSuchAlgorithmException {

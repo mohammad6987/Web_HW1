@@ -39,11 +39,9 @@ public class UsersController {
     public ResponseEntity<String> login(@RequestBody EndUserDto endUserDto){
         try {
             EndUser endUser = endUserDetailsService.getUserByUsername(endUserDto.getUsername());
-            if(endUserDetailsService.validatePassword(endUser.getUsername() , endUserDto.getPassword())){
-                return ResponseEntity.status(HttpStatus.OK).body("welcome "+endUser.getUsername());
-            }else{
-                return  ResponseEntity.status(HttpStatus.CONFLICT).body("username doesn't match with password!");
-            }
+
+                return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.validatePassword(endUser.getUsername() , endUserDto.getPassword()));
+
         }catch (Exception e){
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
