@@ -1,6 +1,7 @@
 package com.example.web_hw1.Service;
 
 import com.example.web_hw1.Model.*;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,7 +21,7 @@ public class WeatherService {
     public WeatherService (RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-
+    @Cacheable(value = "countries", key = "#name")
     public CountryDtoForSearch findByName(String name) {
         String url = "https://api.api-ninjas.com/v1/country?name=" + name;
         HttpHeaders headers = new HttpHeaders();
@@ -35,7 +36,7 @@ public class WeatherService {
         }
         return (result);
     }
-
+    @Cacheable(value = "weathers" , key = "#name")
     public WeatherDto CountryWether(String name) {
         String capitalName = "null";
         String url1 = "https://api.api-ninjas.com/v1/country?name=" + name;

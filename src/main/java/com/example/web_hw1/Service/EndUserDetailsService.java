@@ -11,6 +11,8 @@ import com.example.web_hw1.Repository.TokenRepository;
 import com.sun.security.auth.UserPrincipal;
 import jakarta.transaction.Transactional;
 import jdk.jshell.spi.ExecutionControl;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class EndUserDetailsService {
         return tokenRepository;
     }
 
+    @CacheEvict(value = "users", key = "#endUserDto.getUsername()", beforeInvocation = true)
     public String createUser(EndUserDto endUserDto) throws Exception {
         if(endUserRepository.getEndUserByUsername(endUserDto.getUsername()).isPresent()){
             throw new RepeatedUsername("username already taken!");
@@ -98,6 +101,7 @@ public class EndUserDetailsService {
             return user.get();
         }
     }
+    @Cacheable(key = "username" , value = "Enduser")
     public EndUser getUserByUsername(String username){
         Optional<EndUser> user = endUserRepository.getEndUserByUsername(username);
         if(user.isEmpty()){

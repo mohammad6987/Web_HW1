@@ -2,6 +2,7 @@ package com.example.web_hw1.Repository;
 
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.CrudRepository;
 
