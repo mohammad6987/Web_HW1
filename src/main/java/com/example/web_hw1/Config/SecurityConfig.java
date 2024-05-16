@@ -5,6 +5,7 @@ import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Service.EndUserDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,10 @@ import java.util.Date;
 public class SecurityConfig {
     private final EndUserDetailsService endUserDetailsService;
     private final JWTFilter jwtFilter;
+    @Value("${name}")
+    String admin_username;
+    @Value("${password}")
+    String admin_password;
 
     public SecurityConfig(EndUserDetailsService endUserDetailsService,JWTFilter jwtFilter) {
         this.endUserDetailsService = endUserDetailsService;
@@ -55,15 +60,14 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() throws Exception {
-        String username = "ADMIN";
-        String password = "123";
-        EndUser admin = endUserDetailsService.getEndUserRepository().getEndUserByUsername(username).orElse(null);
+
+        EndUser admin = endUserDetailsService.getEndUserRepository().getEndUserByUsername(admin_username).orElse(null);
         if(admin == null || admin.getRole().equals("USER")){
         admin = new EndUser();
         admin.setAuthority(new SimpleGrantedAuthority("ROLE_ADMIN"));
         admin.setRole("ADMIN");
-        admin.setUsername(username);
-        admin.setPassword(endUserDetailsService.hashString(password));
+        admin.setUsername(admin_username);
+        admin.setPassword(endUserDetailsService.hashString(admin_password));
         admin.setAuthorized(true);
         admin.setId(0L);
         endUserDetailsService.getEndUserRepository().save(admin);

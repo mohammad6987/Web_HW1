@@ -160,7 +160,7 @@ public class EndUserDetailsService {
         }
         return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"\n}").collect(Collectors.joining("*************\n"));
+                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"*****\n}").collect(Collectors.joining("\n"));
     }
     @Transactional
     public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {
