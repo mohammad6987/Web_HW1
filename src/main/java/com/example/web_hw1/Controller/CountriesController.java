@@ -60,7 +60,13 @@ public class CountriesController {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{
-        return Optional.ofNullable(weatherService.findByName(name));}
+            CountryDtoForSearch countryDtoForSearch = weatherService.findByName(name);
+            if (countryDtoForSearch.getName() != null) {
+                return Optional.ofNullable(countryDtoForSearch);
+            } else {
+                return null;
+            }
+        }
     }
 
     @GetMapping("/countries/{name}/weather")

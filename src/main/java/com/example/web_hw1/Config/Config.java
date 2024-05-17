@@ -17,15 +17,5 @@ public class Config {
         return new RestTemplate();
     }
 
-//    @Bean
-//    public CountriesController countriesController(RestTemplate restTemplate) {
-//        return new CountriesController(restTemplate);
-//    }
 
-
-//
-//    @Bean
-//    WebClient webclient() {
-//        return new WebClient()
-//    }
 }
