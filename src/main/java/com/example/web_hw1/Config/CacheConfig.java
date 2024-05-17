@@ -11,12 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableCaching
 public class CacheConfig {
-    @Bean
-    public HazelcastInstance hazelcastInstance() {
-        return Hazelcast.newHazelcastInstance();
-    }
+
     @Bean
     public HazelcastCacheManager cacheManager() {
-        return new HazelcastCacheManager(hazelcastInstance());
+        return new HazelcastCacheManager(Hazelcast.newHazelcastInstance());
     }
 }

@@ -1,9 +1,12 @@
 <hazelcast xmlns="http://www.hazelcast.com/schema/config"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.hazelcast.com/schema/config
-                               http://www.hazelcast.com/schema/config/hazelcast-config-3.9.xsd">
-    <map name="cacheWithTTL">
-        <time-to-live-seconds>1</time-to-live-seconds>
+                               https://www.hazelcast.com/schema/config/hazelcast-config-3.9.xsd">
+    <map name="weathers">
+        <time-to-live-seconds>5</time-to-live-seconds>
+    </map>
+    <map name="countries">
+        <time-to-live-seconds>5</time-to-live-seconds>
     </map>
     <jet enabled="true"/>
 </hazelcast>
