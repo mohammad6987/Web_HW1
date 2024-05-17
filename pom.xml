@@ -14,7 +14,7 @@
     <name>Web_HW1</name>
     <description>Web_HW1</description>
     <properties>
-        <java.version>19</java.version>
+        <java.version>22</java.version>
         <maven.compiler.source>19</maven.compiler.source>
         <maven.compiler.target>19</maven.compiler.target>
     </properties>
@@ -84,6 +84,14 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version> <!-- Use the latest version available -->
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>

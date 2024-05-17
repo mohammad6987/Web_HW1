@@ -51,7 +51,6 @@ public class EndUserDetailsService {
         return tokenRepository;
     }
 
-    @CacheEvict(value = "users", key = "#endUserDto.getUsername()", beforeInvocation = true)
     public String createUser(EndUserDto endUserDto) throws Exception {
         if(endUserRepository.getEndUserByUsername(endUserDto.getUsername()).isPresent()){
             throw new RepeatedUsername("username already taken!");
@@ -101,7 +100,6 @@ public class EndUserDetailsService {
             return user.get();
         }
     }
-    @Cacheable(key = "username" , value = "Enduser")
     public EndUser getUserByUsername(String username){
         Optional<EndUser> user = endUserRepository.getEndUserByUsername(username);
         if(user.isEmpty()){

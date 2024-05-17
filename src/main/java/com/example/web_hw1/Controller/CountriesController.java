@@ -40,7 +40,6 @@ public class CountriesController {
 
 
     @GetMapping("/countries")
-    @Cacheable(value = "countries", key = "#allCountries")
     public CountryContainer getCountry(@AuthenticationPrincipal EndUser endUser) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
@@ -55,7 +54,6 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}")
-    @Cacheable(value = "countries", key = "#name")
     public Optional<CountryDtoForSearch> getCountryByName(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
@@ -64,9 +62,6 @@ public class CountriesController {
     }
 
     @GetMapping("/countries/{name}/weather")
-    @Cacheable(value = "weather" , key = "#name")
-    @CacheEvict(value = "weather" , key = "#name")
-    // name is the name of a country
     public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
