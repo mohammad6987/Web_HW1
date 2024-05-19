@@ -1,5 +1,6 @@
 package com.example.web_hw1.Service;
 
+import com.example.web_hw1.Exception.CountryNotFoundException;
 import com.example.web_hw1.Model.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -36,8 +37,10 @@ public class WeatherService {
         }
         return (result);
     }
+
+
     @Cacheable(value = "weathers" , key = "#name")
-    public WeatherDto CountryWether(String name) {
+    public WeatherDto CountryWether(String name) throws CountryNotFoundException {
         String capitalName = "null";
         String url1 = "https://api.api-ninjas.com/v1/country?name=" + name;
         HttpHeaders headers1 = new HttpHeaders();
@@ -46,27 +49,31 @@ public class WeatherService {
         ResponseEntity<Country[]> responseEntity1 = restTemplate.exchange(
                 url1, HttpMethod.GET, request1, Country[].class
         );
-        for (Country country : responseEntity1.getBody()) {
-            if (country.getName().contains(name)) {
-                capitalName = country.getCapital();
+        if (responseEntity1.getBody().length == 0) {
+            throw new CountryNotFoundException("Country not found");
+        } else {
+            for (Country country1 : responseEntity1.getBody()) {
+                if (country1.getName().contains(name)) {
+                    capitalName = country1.getCapital();
+                }
             }
-        }
-        WeatherDto finalWeather = new WeatherDto();
+            WeatherDto finalWeather = new WeatherDto();
 
-        String url = "https://api.api-ninjas.com/v1/weather?city=" + capitalName;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-api-key", "LIPQv0O9lPlFFgxNslVs5g==sQ6DOXmXmTdOZPCm");
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<Weather> responseEntity = restTemplate.exchange(
-                url, HttpMethod.GET, request, Weather.class
-        );
-        // this can be implemented by constructor (maybe in future)
-        finalWeather.setCountry_name(name);
-        finalWeather.setCapital(capitalName);
-        finalWeather.setHumidity(responseEntity.getBody().getHumidity());
-        finalWeather.setTemp(responseEntity.getBody().getTemp());
-        finalWeather.setWind_speed(responseEntity.getBody().getWind_speed());
-        finalWeather.setWind_degrees(responseEntity.getBody().getWind_degrees());
-        return finalWeather;
+            String url = "https://api.api-ninjas.com/v1/weather?city=" + capitalName;
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("x-api-key", "LIPQv0O9lPlFFgxNslVs5g==sQ6DOXmXmTdOZPCm");
+            HttpEntity<Void> request = new HttpEntity<>(headers);
+            ResponseEntity<Weather> responseEntity = restTemplate.exchange(
+                    url, HttpMethod.GET, request, Weather.class
+            );
+            // this can be implemented by constructor (maybe in future)
+            finalWeather.setCountry_name(name);
+            finalWeather.setCapital(capitalName);
+            finalWeather.setHumidity(responseEntity.getBody().getHumidity());
+            finalWeather.setTemp(responseEntity.getBody().getTemp());
+            finalWeather.setWind_speed(responseEntity.getBody().getWind_speed());
+            finalWeather.setWind_degrees(responseEntity.getBody().getWind_degrees());
+            return finalWeather;
+        }
     }
 }
