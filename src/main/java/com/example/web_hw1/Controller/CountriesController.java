@@ -74,7 +74,7 @@ public class CountriesController {
     @Cacheable(value = "weather" , key = "#name")
     @CacheEvict(value = "weather" , key = "#name")
     // name is the name of a country
-    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess {
+    public WeatherDto getCountryWeather(@AuthenticationPrincipal EndUser endUser,@PathVariable String name) throws UnAuthorizedAccess, CountryNotFoundException {
         if(endUser == null || !endUser.isAuthorized()){
             throw new UnAuthorizedAccess("this user hasn't been enables!\nwait until the admin authenticate this account!");
         }else{

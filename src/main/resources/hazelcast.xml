@@ -3,10 +3,12 @@
            xsi:schemaLocation="http://www.hazelcast.com/schema/config
                                https://www.hazelcast.com/schema/config/hazelcast-config-3.9.xsd">
     <map name="weathers">
-        <time-to-live-seconds>5</time-to-live-seconds>
+        <time-to-live-seconds>3600</time-to-live-seconds>
+        <max-idle-seconds>5</max-idle-seconds>
     </map>
     <map name="countries">
-        <time-to-live-seconds>5</time-to-live-seconds>
+        <time-to-live-seconds>3600</time-to-live-seconds>
+        <max-idle-seconds>5</max-idle-seconds>
     </map>
     <jet enabled="true"/>
 </hazelcast>
