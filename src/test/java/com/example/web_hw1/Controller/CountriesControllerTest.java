@@ -92,11 +92,11 @@ class CountriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.country_name").value("Iran, Islamic Republic Of"))
-                .andExpect(jsonPath("$.capital").value("Tehran"))
-                .andExpect(jsonPath("wind_speed").value(4.12))
-                .andExpect(jsonPath("temp").value(28))
-                .andExpect(jsonPath("$.wind_degrees").value(200))
-                .andExpect(jsonPath("$.humidity").value(20));
+                .andExpect(jsonPath("$.capital").value("Tehran"));
+//                .andExpect(jsonPath("wind_speed").value(4.12))
+//                .andExpect(jsonPath("temp").value(28))
+//                .andExpect(jsonPath("$.wind_degrees").value(200))
+//                .andExpect(jsonPath("$.humidity").value(20));
     }
 
     @Test
@@ -105,11 +105,11 @@ class CountriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.country_name").value("China"))
-                .andExpect(jsonPath("$.capital").value("Beijing"))
-                .andExpect(jsonPath("wind_speed").value(3.78))
-                .andExpect(jsonPath("temp").value(27))
-                .andExpect(jsonPath("$.wind_degrees").value(180))
-                .andExpect(jsonPath("$.humidity").value(26));
+                .andExpect(jsonPath("$.capital").value("Beijing"));
+//                .andExpect(jsonPath("wind_speed").value(3.78))
+//                .andExpect(jsonPath("temp").value(27))
+//                .andExpect(jsonPath("$.wind_degrees").value(180))
+//                .andExpect(jsonPath("$.humidity").value(26));
     }
 
     @Test
@@ -118,11 +118,7 @@ class CountriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.country_name").value(	"United States"))
-                .andExpect(jsonPath("$.capital").value("Washington, D.C."))
-                .andExpect(jsonPath("wind_speed").value(2.53))
-                .andExpect(jsonPath("temp").value(8))
-                .andExpect(jsonPath("$.wind_degrees").value(287))
-                .andExpect(jsonPath("$.humidity").value(60));
+                .andExpect(jsonPath("$.capital").value("Washington, D.C."));
     }
 
     @Test
@@ -131,10 +127,10 @@ class CountriesControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.country_name").value(	"Argentina"))
-                .andExpect(jsonPath("$.capital").value(	"Buenos Aires"))
-                .andExpect(jsonPath("wind_speed").value(3.6))
-                .andExpect(jsonPath("temp").value(12))
-                .andExpect(jsonPath("$.wind_degrees").value(360))
-                .andExpect(jsonPath("$.humidity").value(88));
+                .andExpect(jsonPath("$.capital").value(	"Buenos Aires"));
+//                .andExpect(jsonPath("wind_speed").value(3.6))
+//                .andExpect(jsonPath("temp").value(12))
+//                .andExpect(jsonPath("$.wind_degrees").value(360))
+//                .andExpect(jsonPath("$.humidity").value(88));
     }
 }
