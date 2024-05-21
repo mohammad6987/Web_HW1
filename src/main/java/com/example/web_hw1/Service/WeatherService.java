@@ -41,7 +41,8 @@ public class WeatherService {
 
     @Cacheable(value = "weathers" , key = "#name")
     public WeatherDto CountryWether(String name) throws CountryNotFoundException {
-        String capitalName = "null";
+        String capitalName = null;
+        String countryName = null;
         String url1 = "https://api.api-ninjas.com/v1/country?name=" + name;
         HttpHeaders headers1 = new HttpHeaders();
         headers1.set("x-api-key", "LIPQv0O9lPlFFgxNslVs5g==sQ6DOXmXmTdOZPCm");
@@ -53,12 +54,10 @@ public class WeatherService {
             throw new CountryNotFoundException("Country not found");
         } else {
             for (Country country1 : responseEntity1.getBody()) {
-                if (country1.getName().contains(name)) {
-                    capitalName = country1.getCapital();
-                }
+                capitalName = country1.getCapital();
+                countryName = country1.getName();
             }
             WeatherDto finalWeather = new WeatherDto();
-
             String url = "https://api.api-ninjas.com/v1/weather?city=" + capitalName;
             HttpHeaders headers = new HttpHeaders();
             headers.set("x-api-key", "LIPQv0O9lPlFFgxNslVs5g==sQ6DOXmXmTdOZPCm");
@@ -66,8 +65,7 @@ public class WeatherService {
             ResponseEntity<Weather> responseEntity = restTemplate.exchange(
                     url, HttpMethod.GET, request, Weather.class
             );
-            // this can be implemented by constructor (maybe in future)
-            finalWeather.setCountry_name(name);
+            finalWeather.setCountry_name(countryName);
             finalWeather.setCapital(capitalName);
             finalWeather.setHumidity(responseEntity.getBody().getHumidity());
             finalWeather.setTemp(responseEntity.getBody().getTemp());
