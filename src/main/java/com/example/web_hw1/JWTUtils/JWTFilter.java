@@ -25,7 +25,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private TokenManger tokenManger;
     @Autowired
     private EndUserDetailsService endUserDetailsService;
-    String admin_username = "ADMIN";
+    //String admin_username = "ADMIN";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -43,7 +43,7 @@ public class SecurityConfig {
                  csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth ->auth
                          .requestMatchers("/users/register").permitAll()
                          .requestMatchers("/users/login").permitAll()
-                         .requestMatchers(HttpMethod.GET,"/user/api-tokens" ).permitAll()
+                         //.requestMatchers(HttpMethod.GET,"/user/api-tokens" ).permitAll()
                          .requestMatchers("/admin/*").hasAuthority("ROLE_ADMIN")
                          .anyRequest().authenticated()
                  )
@@ -75,7 +75,7 @@ public class SecurityConfig {
         tokenPack.setName("prime_token");
         tokenPack.setExpireDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse("2029-01-01T23:59:59Z"));
         tokenPack.setOwnerUsername(admin.getUsername());
-        tokenPack.setTokenValue(endUserDetailsService.generateToken("prime_token","2029-01-01T23:59:59Z" , admin));
+        tokenPack.setTokenValue(endUserDetailsService.generateToken("prime_token","2029-01-01T23:59:59Z" , admin).getTokenValue());
         endUserDetailsService.getTokenRepository().save(tokenPack);
         }
         return new InMemoryUserDetailsManager();

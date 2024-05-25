@@ -66,7 +66,7 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser));
+            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser).toString());
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }
@@ -78,7 +78,11 @@ public class UsersController {
         if(endUser == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.getAllTokens(endUser));
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.getAllTokens(endUser));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("there is a problem with your token!");
+        }
     }
 
     @DeleteMapping("/user/api-tokens")

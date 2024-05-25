@@ -5,6 +5,7 @@ import com.example.web_hw1.Exception.RepeatedUsername;
 import com.example.web_hw1.JWTUtils.TokenManger;
 import com.example.web_hw1.Model.EndUser;
 import com.example.web_hw1.Model.EndUserDto;
+import com.example.web_hw1.Model.TokenDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
@@ -65,7 +66,7 @@ public class EndUserDetailsService {
         return "new user created!\nplease wait until the admin authenticate your account";
 
     }
-    public String generateToken(String tokenName , String expireDate , EndUser endUser){
+    public TokenDto generateToken(String tokenName , String expireDate , EndUser endUser){
         if(endUser == null){
             throw new ExpiredTokenException("username is null!");
         }
@@ -86,10 +87,11 @@ public class EndUserDetailsService {
         tokenPack.setExpireDate(expire);
         tokenPack.setOwnerUsername(endUser.getUsername());
         tokenRepository.save(tokenPack);
-        return ("new token created :\n" +
-                "name : "+ tokenName+"\n"+
-                "token value :"+ tokenPack.getTokenValue()+"\n"+
-                "expire date : "+ tokenPack.getExpireDate());
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setTokenValue(tokenPack.getTokenValue());
+        tokenDto.setName(tokenName);
+        tokenDto.setDate(expireDate);
+        return tokenDto;
 
     }
     public EndUser getUserById(long id){
@@ -156,9 +158,9 @@ public class EndUserDetailsService {
         if(tokens.isEmpty()){
             return "this user hasn't created any tokens yet!";
         }
-        return  "tokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
+        return  "{\ntokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
                 "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"*****\n}").collect(Collectors.joining("\n"));
+                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"*****\n}").collect(Collectors.joining("\n"))+"\n}";
     }
     @Transactional
     public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {

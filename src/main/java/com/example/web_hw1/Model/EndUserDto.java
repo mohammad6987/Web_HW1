@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class EndUserDto {
     private String username;
     private String password;
+
 }
