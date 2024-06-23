@@ -9,6 +9,7 @@ import com.example.web_hw1.Model.TokenDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.security.auth.UserPrincipal;
 import jakarta.transaction.Transactional;
 import jdk.jshell.spi.ExecutionControl;
@@ -24,10 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -62,6 +60,7 @@ public class EndUserDetailsService {
         endUser.setAuthorized(false);
         endUser.setRole("USER");
         endUser.setAuthority(new SimpleGrantedAuthority("ROLE_USER"));
+        endUser.setRegisterDate(new Date());
         endUserRepository.save(endUser);
         return "new user created!\nplease wait until the admin authenticate your account";
 
@@ -179,5 +178,19 @@ public class EndUserDetailsService {
         }
         tokenRepository.deleteByName(tokenName);
         return "token deleted successfully!";
+    }
+    public String getAllUsers(){
+        ArrayList<EndUser> users = endUserRepository.getAllByIdNotNull();
+        StringBuilder allusers = new StringBuilder();
+        allusers.append("{\n");
+        for(EndUser x:users){
+            allusers.append(" {\n");
+            allusers.append("  username : ").append(x.getUsername()).append(",\n");
+            allusers.append("  auth : ").append(x.isAuthorized()).append(",\n");
+            allusers.append("  registerDate : ").append(x.getRegisterDate()).append("\n");
+            allusers.append(" }\n");
+        }
+        allusers.append("}");
+        return allusers.toString();
     }
 }

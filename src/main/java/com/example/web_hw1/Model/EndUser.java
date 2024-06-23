@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
 
 @Entity(name = "Users")
@@ -26,6 +27,8 @@ public class EndUser implements UserDetails {
     private String role;
     @Column
     private SimpleGrantedAuthority authority;
+    @Column(name = "regiserDate")
+    private Date registerDate;
 
 
 

@@ -91,7 +91,13 @@ public class UsersController {
             try {
                 return ResponseEntity.status(HttpStatus.OK).body(endUserDetailsService.removeToken(endUser , tokenDto.getName() , tokenDto.getTokenValue()));
             }catch (Exception e){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
             }
+    }
+
+    @GetMapping("/admin/getAllUsers")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<String> getAllUser(){
+        return  ResponseEntity.status(200).body(endUserDetailsService.getAllUsers());
     }
 }
