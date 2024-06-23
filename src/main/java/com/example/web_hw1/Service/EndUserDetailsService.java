@@ -188,7 +188,7 @@ public class EndUserDetailsService {
             allusers.append("  username : ").append(x.getUsername()).append(",\n");
             allusers.append("  auth : ").append(x.isAuthorized()).append(",\n");
             allusers.append("  registerDate : ").append(x.getRegisterDate()).append("\n");
-            allusers.append(" }\n");
+            allusers.append(" },\n");
         }
         allusers.append("}");
         return allusers.toString();
