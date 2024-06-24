@@ -9,7 +9,9 @@ import com.example.web_hw1.Model.TokenDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Repository.EndUserRepository;
 import com.example.web_hw1.Repository.TokenRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hazelcast.shaded.org.json.JSONArray;
 import com.sun.security.auth.UserPrincipal;
 import jakarta.transaction.Transactional;
 import jdk.jshell.spi.ExecutionControl;
@@ -181,16 +183,13 @@ public class EndUserDetailsService {
     }
     public String getAllUsers(){
         ArrayList<EndUser> users = endUserRepository.getAllByIdNotNull();
-        StringBuilder allusers = new StringBuilder();
-        allusers.append("{\n");
-        for(EndUser x:users){
-            allusers.append(" {\n");
-            allusers.append("  username : ").append(x.getUsername()).append(",\n");
-            allusers.append("  auth : ").append(x.isAuthorized()).append(",\n");
-            allusers.append("  registerDate : ").append(x.getRegisterDate()).append("\n");
-            allusers.append(" },\n");
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonString = mapper.writeValueAsString(users);
+            return jsonString;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return "An error occurred while converting users to JSON.";
         }
-        allusers.append("}");
-        return allusers.toString();
     }
 }
