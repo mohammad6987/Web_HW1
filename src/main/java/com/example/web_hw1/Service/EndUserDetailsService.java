@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.ObjectError;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -155,11 +156,13 @@ public class EndUserDetailsService {
     public String getAllTokens(EndUser endUser){
         Collection<TokenPack> tokens = tokenRepository.findByOwnerUsername(endUser.getUsername());
         if(tokens.isEmpty()){
-            return "this user hasn't created any tokens yet!";
+            return "{}";
         }
-        return  "{\ntokens count :" + tokens.size()+"\n"+ tokens.stream().map(tokenPack -> "{\ntoken name : "+ tokenPack.getName()+"\n" +
-                "expire date : "+ tokenPack.getExpireDate()+"\n" +
-                "token key ; "+ tokenPack.getTokenValue().substring(0,10)+"*****\n}").collect(Collectors.joining("\n"))+"\n}";
+        try {
+            return  new ObjectMapper().writeValueAsString(tokens);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
     @Transactional
     public String  removeToken(EndUser endUser, String tokenName, String tokenValue) {
