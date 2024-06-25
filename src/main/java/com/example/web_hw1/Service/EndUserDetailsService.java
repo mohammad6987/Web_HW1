@@ -120,9 +120,7 @@ public class EndUserDetailsService {
             initToken.setExpireDate(new Date(System.currentTimeMillis()+ 1000*60*5));
             initToken.setTokenValue(tokenManger.generateToken(endUser.getUsername() , initToken.getExpireDate()));
             tokenRepository.save(initToken);
-            return ("welcome again!\n" +
-                    " please use this token ,it will expire in 5 minutes!\n"+
-                    "token value = "+initToken.getTokenValue());
+            return (initToken.getTokenValue());
 
         }else {
             throw new UsernameNotFoundException("username and password doesn't match!");
