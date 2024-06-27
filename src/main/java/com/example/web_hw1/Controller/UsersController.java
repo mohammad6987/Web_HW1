@@ -6,6 +6,7 @@ import com.example.web_hw1.Model.EndUserDto;
 import com.example.web_hw1.Model.TokenDto;
 import com.example.web_hw1.Model.TokenPack;
 import com.example.web_hw1.Service.EndUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jdk.jshell.spi.ExecutionControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -66,7 +67,7 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("nobody logged in!");
         }
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser).toString());
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ObjectMapper().writeValueAsString(endUserDetailsService.generateToken(tokenDto.getName(), tokenDto.getDate(), endUser)));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
         }

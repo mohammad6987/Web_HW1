@@ -68,7 +68,7 @@ public class EndUserDetailsService {
         return "new user created!\nplease wait until the admin authenticate your account";
 
     }
-    public TokenDto generateToken(String tokenName , String expireDate , EndUser endUser){
+    public TokenDto generateToken(String tokenName , String expireDate , EndUser endUser) throws JsonProcessingException {
         if(endUser == null){
             throw new ExpiredTokenException("username is null!");
         }
